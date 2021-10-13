@@ -1,13 +1,15 @@
-FROM rust:1.55.0
+FROM rustlang/rust:nightly-buster-slim
 
 ENV ROCKET_ADDRESS=0.0.0.0
 ENV ROCKET_PORT=8080
 
 WORKDIR /app
-COPY . .
+COPY ./src ./src
+COPY Cargo.toml .
+COPY .env .
 
-RUN rustup default nightly
-RUN cargo install cargo-watch
 RUN cargo build
 
-CMD ["cargo", "watch", "-x", "run"]
+# debug
+# CMD ["cargo", "watch", "-x", "run"]
+CMD ["cargo", "run"]
