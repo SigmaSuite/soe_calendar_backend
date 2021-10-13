@@ -1,0 +1,11 @@
+GET http://127.0.0.1:8080/persons/1
+###
+POST http://127.0.0.1:8080/persons/ HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Szymon Ciombor",
+    "bankAccount": "123145657676"
+}
+###
+GET http://127.0.0.1:8080/persons
