@@ -64,7 +64,7 @@ spec:
 
 
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: soe-calendar-db
@@ -74,6 +74,9 @@ spec:
     metadata:
       labels:
         service: soe-calendar-db
+  selector:
+    matchLabels:
+      app: soe-calendar-db
     spec:
       containers:
         - name: soe-calendar-db
