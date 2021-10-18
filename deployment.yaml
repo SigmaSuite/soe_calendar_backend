@@ -59,7 +59,7 @@ spec:
 
       volumes:
         - persistentVolumeClaim:
-          claimName: pvc-soe-calendar-schema-rs
+            claimName: pvc-soe-calendar-schema-rs
           name: schema
 
 
@@ -95,7 +95,7 @@ spec:
               name: "pgdata"
       volumes:
         - persistentVolumeClaim:
-          claimName: pvc-soe-calendar
+            claimName: pvc-soe-calendar
           name: pgdata
 ---
 apiVersion: v1
