@@ -32,7 +32,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: POSTGRES_PASSWORD
-                  name: POSTGRES_PASSWORD
+                  name: postgres
             - name: DATABASE_URL
               value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
       initContainers:
@@ -53,7 +53,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: POSTGRES_PASSWORD
-                  name: POSTGRES_PASSWORD
+                  name: postgres
             - name: DATABASE_URL
               value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
 
@@ -89,7 +89,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: POSTGRES_PASSWORD
-                  name: POSTGRES_PASSWORD
+                  name: postgres
           volumeMounts:
             - mountPath: "/var/lib/postgresql/data"
               name: "pgdata"
@@ -142,10 +142,3 @@ spec:
   resources:
     requests:
       storage: 1Mi
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: POSTGRES_PASSWORD
-  annotations:
-    secret-generator.v1.mittwald.de/autogenerate: password
