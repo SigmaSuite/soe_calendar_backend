@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soe-calendar
+  labels:
+    app: soe-calendar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soe-calendar
+  template:
+    metadata:
+      labels:
+        app: soe-calendar
+    spec:
+      containers:
+      - name: soe-calendar
+        image: ghcr.io/sigmasuite/soe_calendar_backend:main
+        ports:
+        - containerPort: 8080
+          name: http
+        volumeMounts:
+          - mountPath: "/app/src/schema.rs"
+            name: schema
+        env:
+            - name: POSTGRES_DB
+              value: docker
+            - name: POSTGRES_USER
+              value: root
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
+      initContainers:
+        - name: soe-calendar-db-migrations
+          image: clux/diesel-cli
+          workingDir: /app
+          command:
+            - "diesel migration run && diesel print-schema > src/schema.rs"
+          volumeMounts:
+            - mountPath: "/app/src/schema.rs"
+              name: schema
+          env:
+            - name: POSTGRES_DB
+              value: docker
+            - name: POSTGRES_USER
+              value: root
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
+
+      volumes:
+        - persistentVolumeClaim:
+          claimName: pvc-soe-calendar-schema-rs
+          name: schema
+
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: soe-calendar-db
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: soe-calendar-db
+    spec:
+      containers:
+        - name: soe-calendar-db
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: docker
+            - name: POSTGRES_USER
+              value: root
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: POSTGRES_PASSWORD
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: "pgdata"
+      volumes:
+        - persistentVolumeClaim:
+          claimName: pvc-soe-calendar
+          name: pgdata
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: soe-calendar
+spec:
+  type: ClusterIP
+  selector:
+    app: soe-calendar
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: soe-calendar-db
+spec:
+  selector:
+    app: soe-calendar-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-soe-calendar
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1024Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-soe-calendar-schema-rs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: POSTGRES_PASSWORD
+  annotations:
+    secret-generator.v1.mittwald.de/autogenerate: password
