@@ -22,6 +22,7 @@ spec:
           name: http
         volumeMounts:
           - mountPath: "/app/src/schema.rs"
+            subPath: "schema.rs"
             name: schema
         env:
             - name: POSTGRES_DB
@@ -43,6 +44,7 @@ spec:
           args: ["-c", "mkdir -p /app/src; diesel migration run; diesel print-schema > /app/src/schema.rs"]
           volumeMounts:
             - mountPath: "/app/src/schema.rs"
+              subPath: "schema.rs"
               name: schema
           env:
             - name: POSTGRES_DB
