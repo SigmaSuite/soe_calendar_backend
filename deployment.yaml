@@ -56,7 +56,6 @@ spec:
                   name: postgres
             - name: DATABASE_URL
               value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
-
       volumes:
         - persistentVolumeClaim:
             claimName: pvc-soe-calendar-schema-rs
@@ -70,13 +69,13 @@ metadata:
   name: soe-calendar-db
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: soe-calendar-db
   template:
     metadata:
       labels:
         service: soe-calendar-db
-  selector:
-    matchLabels:
-      app: soe-calendar-db
     spec:
       containers:
         - name: soe-calendar-db
