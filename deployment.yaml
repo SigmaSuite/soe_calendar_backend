@@ -40,7 +40,7 @@ spec:
           image: clux/diesel-cli
           workingDir: /app
           command:
-            - "diesel migration run && diesel print-schema > src/schema.rs"
+            - "mkdir -p /app/src && diesel migration run && diesel print-schema > /app/src/schema.rs"
           volumeMounts:
             - mountPath: "/app/src/schema.rs"
               name: schema
