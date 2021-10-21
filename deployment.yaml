@@ -75,7 +75,7 @@ spec:
   template:
     metadata:
       labels:
-        service: soe-calendar-db
+        app: soe-calendar-db
     spec:
       containers:
         - name: soe-calendar-db
