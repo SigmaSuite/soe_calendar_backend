@@ -39,8 +39,8 @@ spec:
         - name: soe-calendar-db-migrations
           image: clux/diesel-cli
           workingDir: /app
-          command:
-            - "sh -c 'mkdir -p /app/src && diesel migration run && diesel print-schema > /app/src/schema.rs'"
+          command: ["/bin/sh"]
+          args: ["-c", "mkdir -p /app/src; diesel migration run; diesel print-schema > /app/src/schema.rs"]
           volumeMounts:
             - mountPath: "/app/src/schema.rs"
               name: schema
