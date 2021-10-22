@@ -31,7 +31,7 @@ spec:
                   key: POSTGRES_PASSWORD
                   name: postgres
             - name: DATABASE_URL
-              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe-calendar-db/$(POSTGRES_DB)
 ---
 apiVersion: apps/v1
 kind: Deployment
