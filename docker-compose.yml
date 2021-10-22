@@ -20,7 +20,7 @@ services:
       retries: 10
   calendar:
     build: .
-    command: bash -c "cargo watch -x run"
+    command: bash -c "cargo run"
     depends_on:
       db:
         condition: service_healthy

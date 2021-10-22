@@ -20,10 +20,6 @@ spec:
         ports:
         - containerPort: 8080
           name: http
-        volumeMounts:
-          - mountPath: "/app/src/schema.rs"
-            subPath: "schema.rs"
-            name: schema
         env:
             - name: POSTGRES_DB
               value: docker
@@ -36,34 +32,6 @@ spec:
                   name: postgres
             - name: DATABASE_URL
               value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
-      initContainers:
-        - name: soe-calendar-db-migrations
-          image: clux/diesel-cli
-          workingDir: /app
-          command: ["/bin/sh"]
-          args: ["-c", "mkdir -p /app/src; diesel migration run; diesel print-schema > /app/src/schema.rs"]
-          volumeMounts:
-            - mountPath: "/app/src/schema.rs"
-              subPath: "schema.rs"
-              name: schema
-          env:
-            - name: POSTGRES_DB
-              value: docker
-            - name: POSTGRES_USER
-              value: root
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: POSTGRES_PASSWORD
-                  name: postgres
-            - name: DATABASE_URL
-              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@soe_calendar_db/$(POSTGRES_DB)
-      volumes:
-        - persistentVolumeClaim:
-            claimName: pvc-soe-calendar-schema-rs
-          name: schema
-
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -135,14 +103,3 @@ spec:
   resources:
     requests:
       storage: 1024Mi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-soe-calendar-schema-rs
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Mi

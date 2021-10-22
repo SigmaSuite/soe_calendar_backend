@@ -6,6 +6,7 @@ RUN apt update -y && apt install -y libpq-dev
 
 WORKDIR /app
 COPY ./src ./src
+COPY ./migrations ./migrations
 COPY Cargo.toml .
 COPY .env .
 

@@ -3,6 +3,8 @@
 extern crate chrono;
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate diesel_migrations;
 extern crate dotenv;
 extern crate r2d2;
 extern crate r2d2_diesel;
@@ -12,6 +14,8 @@ extern crate rocket;
 extern crate serde_derive;
 
 use dotenv::dotenv;
+use diesel_migrations::embed_migrations;
+embed_migrations!("migrations/");
 
 mod api;
 mod schema;

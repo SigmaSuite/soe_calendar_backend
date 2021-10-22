@@ -1,6 +1,7 @@
 use std::env;
 use std::ops::Deref;
 
+use diesel::Connection;
 use diesel::pg::PgConnection;
 use r2d2;
 use r2d2_diesel::ConnectionManager;
@@ -8,11 +9,17 @@ use rocket::{Outcome, Request, State};
 use rocket::http::Status;
 use rocket::request::{self, FromRequest};
 
+use diesel_migrations::embed_migrations;
+embed_migrations!("migrations/");
+
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 pub fn init_pool() -> Pool {
     let manager = ConnectionManager::<PgConnection>::new(database_url());
-    Pool::new(manager).expect("db pool")
+    let pool = Pool::new(manager).expect("db pool");
+    let conn = PgConnection::establish(&database_url()).expect("cannot connect");
+    embedded_migrations::run(&conn);
+    return pool;
 }
 
 fn database_url() -> String {
